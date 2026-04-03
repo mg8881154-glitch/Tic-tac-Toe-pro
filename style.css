@@ -172,3 +172,11 @@ nav {
     opacity: 0;
   }
 }
+
+/* Sad Emoji for loser */
+.sad-emoji {
+  font-size: 0px;
+  transition: font-size 1s ease;
+  text-align: center;
+  margin-top: 10px;
+}

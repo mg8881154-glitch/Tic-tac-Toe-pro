@@ -76,6 +76,7 @@ const checkwin = () => {
             gameover.play();
             startParty(); // 🎉 Party on win!
             document.querySelector(".imgbox").getElementsByTagName("img")[0].style.width = "200px"
+            document.querySelector(".sad-emoji").style.fontSize = "80px" // 😢 Sad for loser
         }
     })
 
@@ -116,7 +117,8 @@ reset.addEventListener("click", () => {
     });
     turn = "X";
     isgameover = false;
-    stopConfetti(); // stop party on reset
+    stopConfetti();
     document.getElementsByClassName("info")[0].innerText = "Turn for " + turn;
     document.querySelector(".imgbox").getElementsByTagName("img")[0].style.width = "0px"
+    document.querySelector(".sad-emoji").style.fontSize = "0px"
 })
