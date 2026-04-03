@@ -238,3 +238,35 @@ nav ul { list-style: none; }
   .box { font-size: 20vw; }
   .gameInfo { min-width: unset; width: 90vw; }
 }
+
+/* Pop animation on cell place */
+@keyframes popIn {
+  0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  60%  { transform: scale(1.2) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.box.pop { animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* Difficulty buttons */
+.difficulty-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.difficulty-row span { font-size: 14px; color: #555; font-weight: bold; }
+.diff-btns { display: flex; gap: 8px; }
+.diff-btn {
+  padding: 7px 14px;
+  border: 2px solid #667eea;
+  border-radius: 20px;
+  background: white;
+  color: #667eea;
+  cursor: pointer;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+.diff-btn:hover { background: #667eea; color: white; }
+.diff-btn.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-color: transparent; }

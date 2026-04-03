@@ -27,10 +27,20 @@ document.getElementById("darkToggle").addEventListener("click", () => {
 let turn = "X";
 let isgameover = false;
 let isAI = false;
+let difficulty = "easy";
 let confettiInterval = null;
-let moveHistory = []; // [{index, player}]
+let moveHistory = [];
 let scores = { X: 0, O: 0, draw: 0 };
 let playerNames = { X: "Player X", O: "Player O" };
+
+// --- Difficulty Selector ---
+document.querySelectorAll(".diff-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        difficulty = btn.dataset.level;
+    });
+});
 
 // --- Name Modal ---
 const nameModal = document.getElementById("nameModal");
@@ -70,6 +80,13 @@ const launchConfetti = () => {
 };
 const stopConfetti = () => { clearInterval(confettiInterval); confettiInterval = null; document.querySelectorAll(".confetti-piece").forEach(el => el.remove()); };
 const startParty = () => { launchConfetti(); confettiInterval = setInterval(launchConfetti, 2000); };
+
+// --- Cell Animation ---
+const animateCell = (cell) => {
+    cell.classList.remove("pop");
+    void cell.offsetWidth; // reflow to restart animation
+    cell.classList.add("pop");
+};
 
 // --- Win Check ---
 const winCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -146,6 +163,39 @@ const minimax = (board, isMaximizing) => {
 
 const aiMove = () => {
     const board = getBoardState();
+    const emptyCells = board.map((v, i) => v === "" ? i : null).filter(i => i !== null);
+    let bestMove = -1;
+
+    if (difficulty === "easy") {
+        // Random move
+        bestMove = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    } else if (difficulty === "medium") {
+        // 50% chance smart, 50% random
+        if (Math.random() < 0.5) {
+            bestMove = getBestMove(board);
+        } else {
+            bestMove = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        }
+    } else {
+        // Hard - full minimax
+        bestMove = getBestMove(board);
+    }
+
+    if (bestMove !== -1) {
+        const boxes = document.querySelectorAll(".box");
+        const boxtext = boxes[bestMove].querySelector(".boxtext");
+        boxtext.innerText = "0";
+        boxes[bestMove].classList.add("ai-move");
+        animateCell(boxes[bestMove]);
+        moveHistory.push({ index: bestMove, player: "0" });
+        turn = "X";
+        playSound(Audioturn);
+        checkWin();
+        if (!isgameover) document.querySelector(".info").innerText = `Turn for ${playerNames[turn]}`;
+    }
+};
+
+const getBestMove = (board) => {
     let bestVal = -Infinity, bestMove = -1;
     board.forEach((cell, i) => {
         if (cell === "") {
@@ -155,17 +205,7 @@ const aiMove = () => {
             if (val > bestVal) { bestVal = val; bestMove = i; }
         }
     });
-    if (bestMove !== -1) {
-        const boxes = document.querySelectorAll(".box");
-        const boxtext = boxes[bestMove].querySelector(".boxtext");
-        boxtext.innerText = "0";
-        boxes[bestMove].classList.add("ai-move");
-        moveHistory.push({ index: bestMove, player: "0" });
-        turn = "X";
-        playSound(Audioturn);
-        checkWin();
-        if (!isgameover) document.querySelector(".info").innerText = `Turn for ${playerNames[turn]}`;
-    }
+    return bestMove;
 };
 
 // --- Game Logic ---
@@ -176,6 +216,7 @@ boxes.forEach((element, idx) => {
         if (boxtext.innerText === "" && !isgameover && !(isAI && turn === "0")) {
             boxtext.innerText = turn;
             element.classList.remove("ai-move");
+            animateCell(element);
             moveHistory.push({ index: idx, player: turn });
             turn = turn === "X" ? "0" : "X";
             playSound(Audioturn);
@@ -205,7 +246,7 @@ document.getElementById("undoBtn").addEventListener("click", () => {
 // --- Reset ---
 const resetGame = () => {
     document.querySelectorAll(".boxtext").forEach(el => { el.innerText = ""; });
-    document.querySelectorAll(".box").forEach(el => el.classList.remove("winner-cell", "ai-move"));
+    document.querySelectorAll(".box").forEach(el => el.classList.remove("winner-cell", "ai-move", "pop"));
     turn = "X";
     isgameover = false;
     moveHistory = [];

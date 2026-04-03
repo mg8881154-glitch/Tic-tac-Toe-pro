@@ -23,6 +23,14 @@
         <h2>Enter Player Names</h2>
         <input type="text" id="player1Name" placeholder="Player X name" maxlength="12" />
         <input type="text" id="player2Name" placeholder="Player O name" maxlength="12" />
+        <div class="difficulty-row" id="difficultyRow">
+          <span>AI Difficulty:</span>
+          <div class="diff-btns">
+            <button class="diff-btn active" data-level="easy">😊 Easy</button>
+            <button class="diff-btn" data-level="medium">😐 Medium</button>
+            <button class="diff-btn" data-level="hard">😈 Hard</button>
+          </div>
+        </div>
         <div class="modal-btns">
           <button id="vsHuman">👥 2 Players</button>
           <button id="vsAI">🤖 vs Computer</button>
